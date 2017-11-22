@@ -386,7 +386,7 @@ def cards(bot, query, count = 0):
 def card_commands(bot, trigger):
     if trigger[0] != '$':
         return
-    data = shared_var['re_delimiters'].split(trigger.lower())
+    data = shared_var['re_delimiters'].split(trigger.strip().lower())
     command = data[0][1:]
     if command in shared_var['card_commands']:
         if len(data)==1:
