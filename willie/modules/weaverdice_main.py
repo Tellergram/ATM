@@ -113,6 +113,7 @@ def refresh(bot, trigger):
 @example('$trigger')
 @example('$trigger 42')
 @commands('trigger')
+@commands('bligelwer')
 @priority('low')
 def trigger(bot, trigger):
     """Fetches a trigger from the Weaver Dice trigger spreadsheet."""
