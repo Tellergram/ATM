@@ -93,8 +93,6 @@ def cache_capes():
             
 def cache_dibs():
     shared_var['dibs'] = []
-    
-    #Dibs
     spreadsheet = google_sheet_get(shared_var['sheet'])
     worksheet = spreadsheet.worksheet('Dibs')
     values = worksheet.get_all_values()
@@ -290,11 +288,19 @@ def dibs(bot, trigger):
         worksheet = spreadsheet.worksheet('Dibs')
         
         # Try to find a blank row
-        slot = None
-        for index, cape in enumerate(shared_var['dibs']):
-            if cape['name'] == '':
-                slot = index
-                break
+        if len(shared_var['dibs']) + 1 < worksheet.row_count:
+            index = len(shared_var['dibs'])
+            slot = index
+            shared_var['dibs'].append({
+                'name': '',
+                'owner': ''
+            })
+        else:
+            slot = None
+            for index, cape in enumerate(shared_var['dibs']):
+                if cape['name'] == '':
+                    slot = index
+                    break
                 
         # Update worksheet and cache
         if slot is not None:
