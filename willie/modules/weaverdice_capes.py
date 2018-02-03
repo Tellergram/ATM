@@ -18,6 +18,7 @@ def setup(bot):
 
     print 'Fetching capes...'
     cache_capes()
+    cache_dibs()
 
 def remove_accents(input_str):
     nfkd_form = unicodedata.normalize('NFKD', input_str)
@@ -82,7 +83,6 @@ def cache_capes():
                 'status': value[9].encode('utf-8', 'ignore').decode('utf-8').strip(),
                 'notes': value[10].encode('utf-8', 'ignore').decode('utf-8').strip()
             }
-        
             
             for match in shared_var['re_aka'].findall(cape['notes']):
                 cape['alias'].append(match[1])
@@ -90,6 +90,22 @@ def cache_capes():
             cape['s_name'] = [cape['name'].lower(), remove_accents(cape['name']).lower()]
             cape['s_alias'] = [x.lower() for x in cape['alias']] + [remove_accents(x).lower() for x in cape['alias']]
             shared_var['capes'].append(cape)
+            
+def cache_dibs():
+    shared_var['dibs'] = []
+    
+    #Dibs
+    spreadsheet = google_sheet_get(shared_var['sheet'])
+    worksheet = spreadsheet.worksheet('Dibs')
+    values = worksheet.get_all_values()
+    
+    for value in values[1:]:
+        name = value[0].encode('utf-8', 'ignore').decode('utf-8').strip()
+        owner = value[1].encode('utf-8', 'ignore').decode('utf-8').strip()
+        shared_var['dibs'].append({
+            'name': name,
+            'owner': owner
+        })
 
 @example('$refresh [luck/cards/triggers/capes]')
 @commands('refresh', 'cache')
@@ -98,7 +114,11 @@ def refresh(bot, trigger):
     """Forces the cache to update."""
     if not trigger.group(2) or trigger.group(2).lower() == 'capes':
         cache_capes()
-        return say(bot,"Cape cache updated.")
+        say(bot,"Cape cache updated.")
+        
+    if not trigger.group(2) or trigger.group(2).lower() == 'dibs':
+        cache_dibs()
+        say(bot,"Dibs cache updated.")
                 
 @example('$cape Skitter')
 @commands('cape')
@@ -227,3 +247,90 @@ def cape(bot, trigger):
         return 
     else:
         return say(bot, 'No cape found.')
+        
+@example('$dibs Skitter')
+@commands('dibs')
+@priority('low')
+@thread(False)
+def dibs(bot, trigger):
+    """Claims a cape name. To see all of the cape names you've claimed, use '$dibs'"""
+    
+    if trigger.group(2):
+        name = trigger.group(2).strip()
+        
+        say(bot, 'Calling dibs. This might take a moment...')
+        
+        # Update the dibs cache
+        cache_dibs()
+        
+        # Make sure the name is not already claimed
+        cape = next((item for item in shared_var['dibs'] if item['name'].upper() == name.upper()), None)
+        
+        if cape:
+            if cape['owner'].upper() == trigger.nick.upper():
+                return say(bot, 'You already called dibs on that name.')
+            else:
+                return say(bot, cape['owner'] + ' already called dibs on that name.')
+                
+        # Add it to the spreadsheet
+        owner = trigger.nick
+        spreadsheet = google_sheet_get(shared_var['sheet'])
+        worksheet = spreadsheet.worksheet('Dibs')
+        
+        # Try to find a blank row
+        slot = None
+        for index, cape in enumerate(shared_var['dibs']):
+            if cape['name'] == '':
+                slot = index
+                break
+                
+        # Update worksheet and cache
+        if slot is not None:
+            worksheet.update_cell(slot + 2, 1, name)
+            worksheet.update_cell(slot + 2, 2, owner)
+            shared_var['dibs'][index]['name'] = name
+            shared_var['dibs'][index]['owner'] = owner
+        else:
+            worksheet.append_row([name,owner])
+        
+            # Add it to the cache
+            shared_var['dibs'].append({
+                'name': name,
+                'owner': owner
+            })
+        
+        return say(bot, 'Done!')
+    else:
+        # Show all capes with dibs
+        capes = [cape['name'] for cape in shared_var['dibs'] if cape['owner'].upper() == trigger.nick.upper()]
+        if len(capes) == 0:
+            return say(bot, 'Your have no capes.')
+        else:
+            return say(bot, 'Your capes are: ' + ', '.join(capes))
+            
+@example('$undibs Skitter')
+@commands('undibs')
+@priority('low')
+@thread(False)
+def undibs(bot, trigger):
+    """Reverse a claim on a cape name."""
+    
+    if trigger.group(2):
+        name = trigger.group(2)
+        say(bot, 'Removing dibs. This might take a moment...')
+        # Update the dibs cache
+        cache_dibs()
+    
+        # Check for a cape with the correct details
+        for id, cape in enumerate(shared_var['dibs']):
+            if cape['name'].upper() == name.upper() and cape['owner'].upper() == trigger.nick.upper():
+                # Remove cape
+                spreadsheet = google_sheet_get(shared_var['sheet'])
+                worksheet = spreadsheet.worksheet('Dibs')
+                worksheet.update_cell(id + 2, 1, '')
+                worksheet.update_cell(id + 2, 2, '')
+                return say(bot, 'Dibs removed.')
+        return say(bot, "You don't have dibs on that name.")
+    else:
+        return say(bot, 'Please specify a cape.')
+    
