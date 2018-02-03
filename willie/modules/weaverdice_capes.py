@@ -258,9 +258,21 @@ def dibs(bot, trigger):
     if trigger.group(2):
         name = trigger.group(2).strip()
         
-        say(bot, 'Calling dibs. This might take a moment...')
+        # Make sure the name is not already a cape
+        for id, cape in enumerate(shared_var['capes']):
+                # PERFECT MATCH
+
+                if any(name.lower() == alias for alias in cape['s_name']):
+                    return say(bot, 'This name is already in use. [Cape #' + str(id) + ']')
+                    
+                if any(name.lower() == alias for alias in cape['s_alias'][1:]):
+                    return say(bot, 'This name is already in use. [Cape #' + str(id) + ']')
+
+                if name.lower() == cape['s_alias'][0]:
+                    return say(bot, 'This name is already in use. [Cape #' + str(id) + ']')
         
         # Update the dibs cache
+        say(bot, 'Calling dibs. This might take a moment...')
         cache_dibs()
         
         # Make sure the name is not already claimed
