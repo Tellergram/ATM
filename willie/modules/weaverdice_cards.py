@@ -171,7 +171,7 @@ def refresh(bot, trigger):
 def cards(bot, query, count = 0):
     global recursion_limit
     global recursions
-    recursion_limit = 25
+    recursion_limit = 50
     recursions = 0
     
     def get_deck(key):
@@ -329,7 +329,7 @@ def cards(bot, query, count = 0):
     drawn_cards = []
     separator = '-------'
     positions = ['0th','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th']
-    while len(queue)>0 and count<16:
+    while len(queue) > 0 and count < 16 :
         data = queue.pop(0)
         if not isinstance(data, dict):
             if len(queue)>0 or data != separator:
