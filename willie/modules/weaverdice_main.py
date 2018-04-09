@@ -329,7 +329,8 @@ def unclaim(bot, trigger):
     slot = None
     for i, dic in enumerate(shared_var['trigger_list']):
         if dic['blank']:
-            slot = i
+            slot = i + 1
+            break
 
     if slot is None:
         return say(bot,"...The trigger list is full.")
