@@ -324,9 +324,14 @@ def unclaim(bot, trigger):
     triggers = worksheet.col_values(1)
     triggers += [None] * (worksheet_height - len(triggers))
     update_trigger_cache(triggers)
-    try:
-        slot = triggers.index(None)+1
-    except ValueError:
+
+    # Find the empty slot
+    slot = None
+    for i, dic in enumerate(shared_var['trigger_list']):
+        if dic['blank']:
+            slot = i
+
+    if slot is None:
         return say(bot,"...The trigger list is full.")
     
     #Update trigger list + cache
@@ -466,7 +471,8 @@ def markov(bot, trigger):
             text = text[:-1]+'.'
         else:
             text = text + '.'
-    if (size==4):
+            
+    if (size == 4):
         text = '"'+text[:-1]+'," Scion whispered.'
     return say(bot,text,3)
 
