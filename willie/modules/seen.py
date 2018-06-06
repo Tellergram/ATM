@@ -73,6 +73,6 @@ def note(bot, trigger):
 		bot.memory['seen_dict'][nick] = {
 			'timestamp': time.time(),
 			'name': trigger.nick,
-			'channel': str(trigger.sender),
+			'channel': trigger.sender,
 			'message': trigger
 		}

@@ -27,7 +27,7 @@ def save(bot):
     bot.memory['channel_timer_lock'].acquire()
     try:
         #Save list of channels
-        channels = [str(c).lower() for c in bot.privileges.keys()]
+        channels = [c.lower() for c in bot.privileges.keys()]
         if channels:
             bot.config.core.channels = channels
             bot.config.save()
@@ -86,5 +86,5 @@ def leave(bot, trigger):
 @priority('low')
 def note(bot, trigger):
     if not trigger.is_privmsg:
-        channel = str(trigger.sender).lower()
+        channel = trigger.sender.lower()
         bot.memory['channel_timer_dict'][channel] = time.time()
