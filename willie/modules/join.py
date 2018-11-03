@@ -59,7 +59,7 @@ def autoleave(bot):
 @priority('low')
 def join_on_invite(bot, trigger):
     if trigger.group(2):
-        channel = trigger.group(2).lower()
+        channel = trigger.group(2).lower().strip()
         prefix_list = ('#wd','#worm','#pd','#pact')
         exception_list = ('#pactdice','#weaverdice','#gamedesign','#motorcity','#other')
         user_list = chains.admins(bot)
