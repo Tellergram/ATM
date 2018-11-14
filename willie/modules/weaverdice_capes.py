@@ -324,7 +324,7 @@ def dibs(bot, trigger):
         if len(capes) == 0:
             return say(bot, 'Your have no capes.')
         else:
-            return say(bot, 'Your capes are: ' + ', '.join(capes))
+            return say(bot, 'Your capes are: ' + ', '.join(capes), 6)
             
 @example('$undibs Skitter')
 @commands('undibs')
