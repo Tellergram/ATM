@@ -279,8 +279,8 @@ def dibs(bot, trigger):
         if cape:
             if cape['owner'].upper() == trigger.nick.upper():
                 return say(bot, 'You already called dibs on that name.')
-            else:
-                return say(bot, cape['owner'] + ' already called dibs on that name.')
+            elif cape['owner'].upper() == "'BOW" or cape['owner'].upper() == "WILDBOW":
+                return say(bot, cape['owner'] + ' already used that name.')
                 
         # Add it to the spreadsheet
         owner = trigger.nick
@@ -322,7 +322,7 @@ def dibs(bot, trigger):
         # Show all capes with dibs
         capes = [cape['name'] for cape in shared_var['dibs'] if cape['owner'].upper() == trigger.nick.upper()]
         if len(capes) == 0:
-            return say(bot, 'Your have no capes.')
+            return say(bot, 'You have no capes.')
         else:
             return say(bot, 'Your capes are: ' + ', '.join(capes), 6)
             
