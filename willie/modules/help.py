@@ -64,7 +64,11 @@ def help(bot, trigger):
 @priority('low')
 def commands(bot, trigger):
     """Return a list of bot's commands"""
-    names = ', '.join(sorted(bot.doc.keys() + bot.memory['card_commands']))
+    commands = bot.doc.keys()
+    if not trigger.admin:
+        commands = [x for x in commands if bot.doc[x][2] == False]
+    
+    names = ', '.join(sorted(commands + bot.memory['card_commands']))
 	
     if not trigger.is_privmsg:
         bot.reply("I am sending you a private message of all my commands!")

@@ -423,6 +423,7 @@ def sasl_success(bot, trigger):
 @willie.module.priority('low')
 @willie.module.thread(False)
 @willie.module.unblockable
+@willie.module.admin
 def blocks(bot, trigger):
     """Manage ATM's blocking features. Admins only.
 	$block list - shows all blocks.

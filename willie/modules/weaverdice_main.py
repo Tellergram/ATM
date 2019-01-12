@@ -12,7 +12,11 @@ import random, re, markovgen
 shared_var = {}
 
 def setup(bot):
-    shared_var['re_claim'] = re.compile(r"^([0-9]+) ?([^\[]+)? ?(\[.*\])? ?([^\]]+)?$")
+    shared_var['re_claim'] = [
+        re.compile(r"^([0-9]+) ([^\[]+?)? ?\[(.*)\] ?(.+)$"),
+        re.compile(r"^([0-9]+) ?\/ ?([^\/]+)? ?\/ ?([^\/]+) ?\/ ?(.+)$")
+    ]
+    
     shared_var['trigger_sheet'] = '1mABmj3VVT-KyDpF8Xn67-HKQraCNK_qb6z5HCRUMdwk'
     
     set_delay_timer('trigger', 0)
@@ -141,7 +145,6 @@ def trigger(bot, trigger):
         t = random.choice([x for x in shared_var['trigger_list'] if x['blank'] == False])
         return mute_say(bot, trigger, trigger.nick + ' ' + t['prefix'] + t['text'], 6)
         
-@example('$used')
 @example('$used 42')
 @commands('used')
 @priority('low')
@@ -171,13 +174,13 @@ def used(bot, trigger):
         t = random.choice([x for x in shared_var['used_list'] if x['blank'] == False])
         return mute_say(bot, trigger, trigger.nick + ' ' + t['prefix'] + t['text'], 6)
 
-@example('$claim 42 Campaign Name [Player_Name] Short description of the power.')
+@example('$claim 42 / Campaign Name / Player_Name / Short description of the power.')
 @commands('claim')
 @priority('low')
 @thread(False)
 def claim(bot, trigger):
     """Moves a trigger to the used section of the Weaver Dice trigger spreadsheet.
-    The square brackets around Player_Name should be included."""
+    e.g. $claim 42 Campaign Name [Player_Name] Short description of the power."""
     
     if trigger.sender.lower() != '#weaverdice':
         return say(bot,'Please perform claims in #Weaverdice.')
@@ -185,8 +188,14 @@ def claim(bot, trigger):
     #Validate command
     if not trigger.group(2):
         return say(bot,"Specify a trigger from 1-100.")
-        
-    data = shared_var['re_claim'].match(trigger.group(2))
+
+    for format in shared_var['re_claim']:
+        data = format.match(trigger.group(2))
+        if data is not None:
+            break
+
+    if data is None:
+        return say(bot, "Invalid format. Please use the following format: $claim # / Campaign Name / Player_Name / Short description of the power.")
         
     if data.group(1):
         if is_integer(data.group(1)):
@@ -196,9 +205,9 @@ def claim(bot, trigger):
     else:
         return say(bot,"Specify a trigger from 1-100.")
     
-    game = data.group(2).strip() if data.group(2) else '?'
-    claimer = data.group(3).strip()[1:-1] if data.group(3) else trigger.nick
-    description = data.group(4).strip() if data.group(4) else ''
+    game = data.group(2) if data.group(2) else '?'
+    claimer = data.group(3) if data.group(3) else trigger.nick
+    description = data.group(4) if data.group(4) else ''
     
     delay=get_delay_timer('claim')
     if delay>0:

@@ -37,6 +37,14 @@ OP = 4
 ADMIN = 8
 OWNER = 16
 
+def admin(function):
+    """Decorator. Equivalent to func.admin = True.
+
+    If this decorator is used, the function will be marked as an admin command.
+
+    """
+    function.admin = True
+    return function
 
 def unblockable(function):
     """Decorator. Equivalent to func.unblockable = True.

@@ -151,9 +151,13 @@ class Willie(irc.Bot):
                 except Exception as e:
                     error_count = error_count + 1
                     filename, lineno = tools.get_raising_file_and_line()
-                    rel_path = os.path.relpath(
-                        filename, os.path.dirname(__file__)
-                    )
+                    try:
+                        rel_path = os.path.relpath(
+                            filename, os.path.dirname(__file__)
+                        )
+                    except Exception as e2:
+                        rel_path = filename
+                    
                     raising_stmt = "%s:%d" % (rel_path, lineno)
                     stderr("Error in %s setup procedure: %s (%s)"
                            % (name, e, raising_stmt))
@@ -310,12 +314,15 @@ class Willie(irc.Bot):
                         example = help_prefix + example[len(help_prefix):]
                 if doc or example:
                     for command in func.commands:
-                        self.doc[command] = (doc, example)
+                        self.doc[command] = (doc, example, func.admin)
             self.commands[priority].setdefault(regexp, []).append(func)
 
         for func in self.callables:
             if not hasattr(func, 'unblockable'):
                 func.unblockable = False
+                
+            if not hasattr(func, 'admin'):
+                func.admin = False
 
             if not hasattr(func, 'priority'):
                 func.priority = 'medium'
