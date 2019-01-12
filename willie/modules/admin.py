@@ -47,7 +47,7 @@ def users(bot, trigger):
         return bot.say("I am not in that channel.")
                
     user_list = []
-    for user in bot.privileges[channel].keys():
+    for user in sorted(bot.privileges[channel].keys()):
         nick = user
         
         if bot.privileges[channel][nick] == willie.module.OWNER:
