@@ -49,20 +49,17 @@ def users(bot, trigger):
     user_list = []
     for user in bot.privileges[channel].keys():
         nick = user
-        if bot.privileges[channel][nick] == willie.module.VOICE:
-            nick = '+' + nick
-            
-        if bot.privileges[channel][nick] == willie.module.HALFOP:
-            nick = '%' + nick
-            
-        if bot.privileges[channel][nick] == willie.module.OP:
-            nick = '@' + nick
-            
-        if bot.privileges[channel][nick] == willie.module.ADMIN:
-            nick = '&' + nick
-            
+        
         if bot.privileges[channel][nick] == willie.module.OWNER:
             nick = '~' + nick
+        elif bot.privileges[channel][nick] == willie.module.ADMIN:
+            nick = '&' + nick
+        elif bot.privileges[channel][nick] == willie.module.OP:
+            nick = '@' + nick
+        elif bot.privileges[channel][nick] == willie.module.HALFOP:
+            nick = '%' + nick
+        elif bot.privileges[channel][nick] == willie.module.VOICE:
+            nick = '+' + nick
 
         user_list.append(nick)
                
