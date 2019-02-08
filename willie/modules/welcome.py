@@ -32,11 +32,12 @@ def welcome(bot, trigger):
         nick = common.nick_online(bot, trigger.group(2))
         if nick:
             if nick.lower() not in bot.memory['welcome_dict'] or time.time() - bot.memory['welcome_dict'][nick.lower()]['timestamp'] > 1209600:
-                bot.msg(nick, "Hi %s. Welcome to #Weaverdice, the channel for Worm RP. Check out this link for some useful information about the channel and the game: https://goo.gl/sQWXHb" % (nick))
+                bot.msg(nick, "Hi %s. Welcome to #WeaverDice, the channel for Worm RP. Check out this link for some useful information about the channel and the game: https://goo.gl/sQWXHb" % (nick))
                 bot.memory['welcome_dict'][nick.lower()] = {
                     'timestamp': time.time(),
                     'name': nick
                 }
+                bot.msg("#moderation-discuss", "I just welcomed %s to #WeaverDice." % (nick))
                 return bot.say("Done!")
             else:
                 return bot.say("I already welcomed %s." % (nick))
