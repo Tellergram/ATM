@@ -51,7 +51,7 @@ def save(bot):
 @interval(3600)
 def autoleave(bot):
     for c in bot.memory['channel_timer_dict'].keys():
-        if time.time()-bot.memory['channel_timer_dict'][c]>3600*24*14 and (c != '#weaverdice' and c != '#gamedesign'):
+        if time.time()-bot.memory['channel_timer_dict'][c]>3600*24*14 and (c != '#weaverdice' and c != '#gamedesign' and c!= '#moderation-discuss'):
             bot.part(c)
 
 @example('$join #WormGrantsville')
